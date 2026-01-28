@@ -1,0 +1,12 @@
+# Copy this to .env and fill in the values
+
+# Retell AI Configuration
+VITE_RETELL_API_KEY=your_retell_api_key_here
+VITE_HVAC_AGENT_ID=your_hvac_agent_id_here
+
+# n8n Webhook for Lead Capture
+VITE_N8N_WEBHOOK_URL=https://your-n8n-instance.app.n8n.cloud/webhook/hvac-leads
+
+# Google Ads Conversion Tracking
+# Replace AW-CONVERSION_ID in index.html with your actual conversion ID
+# Replace AW-CONVERSION_ID/CONVERSION_LABEL in App.tsx with your actual values
