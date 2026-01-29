@@ -115,12 +115,12 @@ function App() {
             <div className="hidden lg:flex flex-col items-center">
               <button
                 onClick={() => setShowVoiceDemo(true)}
-                className="leo-logo-container group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
+                className="leo-logo-container w-48 h-48 lg:w-64 lg:h-64 group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
               >
                 <img
                   src={LeoLogo}
                   alt="LEO Sprachassistent"
-                  className="w-48 h-48 lg:w-64 lg:h-64 drop-shadow-lg"
+                  className="w-full h-full drop-shadow-lg"
                 />
               </button>
               <p className="mt-4 text-xl text-leo-gray font-medium flex items-center gap-2">
