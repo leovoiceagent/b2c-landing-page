@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Phone,
   MessageCircle,
   Lightbulb,
   CheckCircle,
@@ -103,8 +104,9 @@ function App() {
               {/* Mobile CTA Button (visible on small screens) */}
               <button
                 onClick={() => setShowVoiceDemo(true)}
-                className="lg:hidden w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-md"
+                className="lg:hidden w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] shadow-md"
               >
+                <Phone className="w-5 h-5" />
                 Jetzt kostenlos anrufen
               </button>
             </div>
