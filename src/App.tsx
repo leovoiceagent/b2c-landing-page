@@ -115,7 +115,7 @@ function App() {
             <div className="hidden lg:flex flex-col items-center">
               <button
                 onClick={() => setShowVoiceDemo(true)}
-                className="group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
+                className="leo-logo-container group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
               >
                 <img
                   src={LeoLogo}

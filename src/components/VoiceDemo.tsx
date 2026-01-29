@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Phone, Mic, MicOff, PhoneOff, X } from 'lucide-react';
+import { Phone, Mic, MicOff, PhoneOff, X, ThumbsDown, Minus, ThumbsUp } from 'lucide-react';
 import { RETELL_CONFIG } from '../config/retell';
 import { RetellWebClient } from 'retell-client-js-sdk';
 
@@ -39,6 +39,8 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [showRating, setShowRating] = useState(false);
+  const [callId, setCallId] = useState<string | null>(null);
   const retellClientRef = useRef<RetellWebClient | null>(null);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -119,6 +121,11 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
       const callData = await response.json();
       console.log('WebRTC call created:', callData);
 
+      // Store call ID for rating
+      if (callData.call_id) {
+        setCallId(callData.call_id);
+      }
+
       // Initialize Retell Web Client
       const retellClient = new RetellWebClient();
       retellClientRef.current = retellClient;
@@ -134,6 +141,8 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
         console.log('Call ended');
         setIsCalling(false);
         setIsConnecting(false);
+        // Show rating modal after call ends
+        setShowRating(true);
       });
 
       retellClient.on('error', (error: unknown) => {
@@ -173,10 +182,8 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
     setIsConnecting(false);
     retellClientRef.current = null;
 
-    // Close the modal
-    if (onClose) {
-      onClose();
-    }
+    // Show rating modal instead of closing
+    setShowRating(true);
   };
 
   // Cleanup on unmount
@@ -196,6 +203,103 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
     setIsMuted(!isMuted);
     console.log('Mute toggled:', !isMuted);
   };
+
+  const submitRating = async (rating: number) => {
+    console.log('Rating submitted:', rating, 'for call:', callId);
+
+    // Send rating to n8n webhook (will be implemented later)
+    if (N8N_WEBHOOK_URL) {
+      try {
+        await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'rating',
+            call_id: callId,
+            rating: rating, // -1, 0, or 1
+            name: formData.name,
+            phone: formData.phone,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+      } catch (err) {
+        console.error('Rating submission error:', err);
+      }
+    }
+
+    // Close modal
+    setShowRating(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const skipRating = () => {
+    console.log('Rating skipped');
+    setShowRating(false);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  // Rating state - after call ended
+  if (showRating) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm sm:max-w-md w-full">
+          <div className="text-center">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-leo-dark mb-2">
+                War LEO hilfreich?
+              </h3>
+              <p className="text-leo-gray text-sm">
+                Ihre Bewertung hilft LEO, sich ständig zu verbessern.
+              </p>
+            </div>
+
+            <div className="flex justify-center space-x-6 mb-8">
+              <button
+                onClick={() => submitRating(-1)}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-red-50 transition-colors group"
+                title="Nicht hilfreich"
+              >
+                <div className="w-16 h-16 bg-gray-100 group-hover:bg-red-100 rounded-full flex items-center justify-center transition-colors">
+                  <ThumbsDown className="h-8 w-8 text-gray-400 group-hover:text-red-500 transition-colors" />
+                </div>
+              </button>
+
+              <button
+                onClick={() => submitRating(0)}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-gray-100 transition-colors group"
+                title="Neutral"
+              >
+                <div className="w-16 h-16 bg-gray-100 group-hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+                  <Minus className="h-8 w-8 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+              </button>
+
+              <button
+                onClick={() => submitRating(1)}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl hover:bg-green-50 transition-colors group"
+                title="Hilfreich"
+              >
+                <div className="w-16 h-16 bg-gray-100 group-hover:bg-green-100 rounded-full flex items-center justify-center transition-colors">
+                  <ThumbsUp className="h-8 w-8 text-gray-400 group-hover:text-green-500 transition-colors" />
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={skipRating}
+              className="text-leo-gray hover:text-leo-dark text-sm transition-colors"
+            >
+              Überspringen
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Connecting state
   if (isConnecting) {

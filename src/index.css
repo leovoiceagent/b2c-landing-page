@@ -12,3 +12,42 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Pulse ring animation for LEO logo */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.leo-logo-container {
+  position: relative;
+}
+
+.leo-logo-container::before,
+.leo-logo-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #FFC107;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.leo-logo-container:hover::before {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+.leo-logo-container:hover::after {
+  animation: pulse-ring 1.5s ease-out 0.5s infinite;
+}
