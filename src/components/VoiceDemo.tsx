@@ -73,7 +73,9 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
       // Fire Google Ads conversion
       if (typeof gtag !== 'undefined') {
         gtag('event', 'conversion', {
-          send_to: 'AW-CONVERSION_ID/CONVERSION_LABEL', // Replace with actual values
+          send_to: 'AW-16911396118/ZnWSCOmC-u4bEJba_f8-',
+          value: 1.0,
+          currency: 'EUR'
         });
       }
 
