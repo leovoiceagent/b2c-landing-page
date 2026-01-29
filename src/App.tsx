@@ -85,7 +85,7 @@ function App() {
               </p>
 
               {/* Trust Line */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-leo-gray mb-8">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-leo-gray mb-6">
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   Keine Verkaufsgespräche
@@ -99,10 +99,18 @@ function App() {
                   Sofort Hilfe
                 </span>
               </div>
+
+              {/* Mobile CTA Button (visible on small screens) */}
+              <button
+                onClick={() => setShowVoiceDemo(true)}
+                className="lg:hidden w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-[1.02] shadow-md"
+              >
+                Jetzt kostenlos anrufen
+              </button>
             </div>
 
             {/* Right: LEO Icon CTA */}
-            <div className="flex flex-col items-center">
+            <div className="hidden lg:flex flex-col items-center">
               <button
                 onClick={() => setShowVoiceDemo(true)}
                 className="group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
@@ -110,7 +118,7 @@ function App() {
                 <img
                   src={LeoLogo}
                   alt="LEO Sprachassistent"
-                  className="w-48 h-48 md:w-64 md:h-64 drop-shadow-lg"
+                  className="w-48 h-48 lg:w-64 lg:h-64 drop-shadow-lg"
                 />
               </button>
               <p className="mt-4 text-xl text-leo-gray font-medium">

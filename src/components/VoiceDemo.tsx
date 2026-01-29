@@ -201,7 +201,7 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   if (isConnecting) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm sm:max-w-md w-full relative">
           <button
             onClick={endCall}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -237,7 +237,7 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   if (isCalling) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+        <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm sm:max-w-md w-full">
           <div className="text-center">
             <div className="mb-6">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -291,7 +291,7 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   // Initial state - Lead capture form
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm sm:max-w-md w-full relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
