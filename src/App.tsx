@@ -89,11 +89,11 @@ function App() {
               <div className="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-leo-gray mb-6">
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  Keine Verkaufsgespräche
+                  Kein Verkaufsgespräch
                 </span>
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  Keine versteckten Kosten
+                  Keine Kosten
                 </span>
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-green-500" />
