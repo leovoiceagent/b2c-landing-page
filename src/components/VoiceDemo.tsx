@@ -1,14 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Phone, Mic, MicOff, PhoneOff } from 'lucide-react';
+import { Phone, Mic, MicOff, PhoneOff, X } from 'lucide-react';
 import { RETELL_CONFIG } from '../config/retell';
 import { RetellWebClient } from 'retell-client-js-sdk';
 
 /**
  * VoiceDemo Component - German B2C Version
  *
- * Voice calling interface that connects to Retell AI.
- * Simplified for consumer use - less technical language.
+ * Two-step flow:
+ * 1. Collect Name + Phone (lead capture)
+ * 2. Start voice call with LEO
  */
+
+// n8n webhook URL for lead capture
+const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
+
+// Google Ads conversion tracking
+declare function gtag(...args: unknown[]): void;
 
 interface VoiceDemoProps {
   agentId?: string;
@@ -21,11 +28,62 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   agentName = 'LEO',
   onClose
 }) => {
+  // Form state
+  const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Call state
   const [isCalling, setIsCalling] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const retellClientRef = useRef<RetellWebClient | null>(null);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormError(null);
+
+    try {
+      // Get UTM parameters from URL
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const leadData = {
+        name: formData.name,
+        phone: formData.phone,
+        source: 'voice_widget',
+        utm_source: urlParams.get('utm_source') || '',
+        utm_campaign: urlParams.get('utm_campaign') || '',
+        timestamp: new Date().toISOString(),
+      };
+
+      // Send to n8n webhook
+      if (N8N_WEBHOOK_URL) {
+        await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(leadData),
+        });
+      }
+
+      // Fire Google Ads conversion
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'conversion', {
+          send_to: 'AW-CONVERSION_ID/CONVERSION_LABEL', // Replace with actual values
+        });
+      }
+
+      setFormSubmitted(true);
+      // Automatically start the call after form submission
+      startVoiceCall();
+    } catch (err) {
+      console.error('Lead submission error:', err);
+      setFormError('Es gab einen Fehler. Bitte versuchen Sie es erneut.');
+      setIsSubmitting(false);
+    }
+  };
 
   const startVoiceCall = async () => {
     try {
@@ -45,7 +103,10 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
           agent_id: agentId,
           sample_rate: 24000,
           enable_backchannel: true,
-          dynamic_variables: []
+          dynamic_variables: [
+            { name: 'caller_name', value: formData.name },
+            { name: 'caller_phone', value: formData.phone }
+          ]
         })
       });
 
@@ -140,7 +201,13 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
   if (isConnecting) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+          <button
+            onClick={endCall}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-6 w-6" />
+          </button>
           <div className="text-center">
             <div className="mb-6">
               <div className="w-20 h-20 bg-leo-blue/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
@@ -221,46 +288,80 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
     );
   }
 
-  // Initial state - Start call prompt
+  // Initial state - Lead capture form
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-        <div className="text-center">
-          <div className="mb-6">
-            <div className="w-20 h-20 bg-leo-yellow/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Phone className="h-10 w-10 text-leo-dark" />
-            </div>
-            <h3 className="text-xl font-bold text-leo-dark mb-2">
-              Jetzt mit LEO sprechen
-            </h3>
-            <p className="text-leo-gray">
-              Beschreiben Sie Ihr Problem oder nennen Sie den Fehlercode
-            </p>
-          </div>
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
+          <X className="h-6 w-6" />
+        </button>
 
-          <div className="space-y-4">
-            <button
-              onClick={startVoiceCall}
-              className="w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-105"
-            >
-              <Phone className="h-5 w-5" />
-              Gespräch starten
-            </button>
-
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="w-full bg-gray-100 text-leo-gray px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
-              >
-                Abbrechen
-              </button>
-            )}
-          </div>
-
-          <p className="text-xs text-leo-gray mt-4">
-            Kostenlos und unverbindlich
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-bold text-leo-dark mb-2">
+            Jetzt mit LEO sprechen
+          </h3>
+          <p className="text-leo-gray text-sm">
+            Bitte geben Sie Ihre Daten ein, damit wir Sie erreichen können
           </p>
         </div>
+
+        <form onSubmit={handleFormSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="modal-name" className="block text-sm font-medium text-leo-dark mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              id="modal-name"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-leo-blue focus:border-transparent"
+              placeholder="Ihr Name"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="modal-phone" className="block text-sm font-medium text-leo-dark mb-1">
+              Mobilnummer
+            </label>
+            <input
+              type="tel"
+              id="modal-phone"
+              required
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-leo-blue focus:border-transparent"
+              placeholder="0170 1234567"
+            />
+          </div>
+
+          {formError && (
+            <p className="text-sm text-red-600 text-center">
+              {formError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
+          >
+            <Phone className="h-5 w-5" />
+            {isSubmitting ? 'Wird verbunden...' : 'Jetzt mit LEO sprechen'}
+          </button>
+        </form>
+
+        <p className="text-xs text-leo-gray text-center mt-4">
+          Mit dem Absenden stimmen Sie unserer{' '}
+          <a href="#datenschutz" className="text-leo-blue hover:underline" onClick={onClose}>
+            Datenschutzerklärung
+          </a>{' '}
+          zu. Das Gespräch wird zur Qualitätssicherung aufgezeichnet.
+        </p>
       </div>
     </div>
   );

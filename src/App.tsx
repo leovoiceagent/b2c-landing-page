@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Phone,
   MessageCircle,
   Lightbulb,
   CheckCircle,
@@ -12,6 +11,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import VoiceDemo from './components/VoiceDemo';
+import LeoLogo from './assets/Leo_logo_round.png';
 
 /**
  * LEO B2C Landing Page - German HVAC Error Code Help
@@ -20,17 +20,9 @@ import VoiceDemo from './components/VoiceDemo';
  * Target: Consumers with heating problems searching error codes
  */
 
-// n8n webhook URL for lead capture
-const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
-
-// Google Ads conversion tracking
-declare function gtag(...args: unknown[]): void;
-
 function App() {
   const [showVoiceDemo, setShowVoiceDemo] = useState(false);
   const [currentPage, setCurrentPage] = useState<'home' | 'impressum' | 'datenschutz'>('home');
-  const [formData, setFormData] = useState({ name: '', phone: '' });
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   // Handle hash navigation for legal pages
@@ -55,47 +47,6 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
-
-  const handleLeadSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus('submitting');
-
-    try {
-      // Get UTM parameters from URL
-      const urlParams = new URLSearchParams(window.location.search);
-
-      const leadData = {
-        name: formData.name,
-        phone: formData.phone,
-        source: 'landing_page',
-        utm_source: urlParams.get('utm_source') || '',
-        utm_campaign: urlParams.get('utm_campaign') || '',
-        timestamp: new Date().toISOString(),
-      };
-
-      // Send to n8n webhook
-      if (N8N_WEBHOOK_URL) {
-        await fetch(N8N_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(leadData),
-        });
-      }
-
-      // Fire Google Ads conversion
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'conversion', {
-          send_to: 'AW-CONVERSION_ID/CONVERSION_LABEL', // Replace with actual values
-        });
-      }
-
-      setFormStatus('success');
-      setFormData({ name: '', phone: '' });
-    } catch (error) {
-      console.error('Lead submission error:', error);
-      setFormStatus('error');
-    }
-  };
 
   // Legal Pages
   if (currentPage === 'impressum') {
@@ -150,79 +101,21 @@ function App() {
               </div>
             </div>
 
-            {/* Right: CTAs */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              {/* Voice Widget CTA */}
+            {/* Right: LEO Icon CTA */}
+            <div className="flex flex-col items-center">
               <button
                 onClick={() => setShowVoiceDemo(true)}
-                className="w-full bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 transition-all duration-300 hover:scale-[1.02] mb-6"
+                className="group cursor-pointer transition-transform duration-300 hover:scale-105 focus:outline-none"
               >
-                <Phone className="w-6 h-6" />
-                Jetzt mit LEO sprechen
+                <img
+                  src={LeoLogo}
+                  alt="LEO Sprachassistent"
+                  className="w-48 h-48 md:w-64 md:h-64 drop-shadow-lg"
+                />
               </button>
-
-              <div className="text-center text-leo-gray text-sm mb-6">
-                — oder —
-              </div>
-
-              {/* Lead Capture Form */}
-              {formStatus === 'success' ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-leo-dark mb-2">
-                    Danke!
-                  </h3>
-                  <p className="text-leo-gray">
-                    Wir melden uns innerhalb von 15 Minuten.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleLeadSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-leo-dark mb-1">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-leo-blue focus:border-transparent"
-                      placeholder="Ihr Name"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-leo-dark mb-1">
-                      Mobilnummer
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-leo-blue focus:border-transparent"
-                      placeholder="0170 1234567"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={formStatus === 'submitting'}
-                    className="w-full bg-leo-dark hover:bg-leo-dark/90 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
-                  >
-                    {formStatus === 'submitting' ? 'Wird gesendet...' : 'Rückruf anfordern'}
-                  </button>
-                  <p className="text-xs text-leo-gray text-center">
-                    Wir melden uns innerhalb von 15 Minuten
-                  </p>
-                  {formStatus === 'error' && (
-                    <p className="text-sm text-red-600 text-center">
-                      Es gab einen Fehler. Bitte versuchen Sie es erneut.
-                    </p>
-                  )}
-                </form>
-              )}
+              <p className="mt-4 text-xl text-leo-gray font-medium">
+                Jetzt mit LEO sprechen
+              </p>
             </div>
           </div>
         </div>
@@ -309,9 +202,17 @@ function App() {
             ))}
           </div>
 
-          <p className="text-center text-leo-gray mt-8">
-            Ihr Code nicht dabei? Sprechen Sie trotzdem mit LEO — wir helfen bei den meisten Herstellern.
-          </p>
+          <div className="text-center mt-8">
+            <p className="text-leo-gray mb-4">
+              Ihr Code nicht dabei? Sprechen Sie trotzdem mit LEO — wir helfen bei den meisten Herstellern.
+            </p>
+            <button
+              onClick={() => setShowVoiceDemo(true)}
+              className="inline-flex items-center gap-2 bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]"
+            >
+              Jetzt mit LEO sprechen
+            </button>
+          </div>
         </div>
       </section>
 
