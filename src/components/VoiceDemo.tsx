@@ -288,13 +288,6 @@ const VoiceDemo: React.FC<VoiceDemoProps> = ({
                 </div>
               </button>
             </div>
-
-            <button
-              onClick={skipRating}
-              className="text-leo-gray hover:text-leo-dark text-sm transition-colors"
-            >
-              Überspringen
-            </button>
           </div>
         </div>
       </div>
