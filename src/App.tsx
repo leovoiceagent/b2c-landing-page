@@ -396,6 +396,12 @@ function App() {
           </div>
           <div className="border-t border-gray-700 pt-8 text-center text-gray-400 text-sm">
             <p>&copy; 2026 LEO Voice Agent. Ein Service der FERO GmbH.</p>
+            <p className="mt-4 text-xs max-w-3xl mx-auto">
+              Haftungsausschluss: LEO ist ein KI-Assistent und kann sich irren. Alle Informationen
+              basieren auf öffentlich verfügbaren Herstellerangaben und ersetzen keine fachkundige
+              Beratung. Für verbindliche Diagnosen und Reparaturen wenden Sie sich bitte an einen
+              autorisierten Fachbetrieb. Keine Haftung für die Richtigkeit der Angaben.
+            </p>
           </div>
         </div>
       </footer>
