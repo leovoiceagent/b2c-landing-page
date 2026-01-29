@@ -123,7 +123,8 @@ function App() {
                   className="w-48 h-48 lg:w-64 lg:h-64 drop-shadow-lg"
                 />
               </button>
-              <p className="mt-4 text-xl text-leo-gray font-medium">
+              <p className="mt-4 text-xl text-leo-gray font-medium flex items-center gap-2">
+                <Phone className="w-5 h-5" />
                 Jetzt mit LEO sprechen
               </p>
             </div>
@@ -145,7 +146,7 @@ function App() {
             {[
               {
                 icon: MessageCircle,
-                title: 'Anrufen oder Formular',
+                title: 'Anrufen',
                 description: 'Beschreiben Sie Ihr Problem oder nennen Sie den Fehlercode',
               },
               {
@@ -155,8 +156,8 @@ function App() {
               },
               {
                 icon: CheckCircle,
-                title: 'Entscheiden',
-                description: 'Sie entscheiden, ob Sie einen Techniker brauchen — kein Druck',
+                title: 'Informiert handeln',
+                description: 'Sie wissen, was los ist und können gezielt nach einem Fachbetrieb suchen',
               },
             ].map((step, index) => (
               <div key={index} className="text-center">
@@ -188,21 +189,49 @@ function App() {
             Wir helfen bei den häufigsten Heizungsfehlern
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { brand: 'Vaillant', codes: ['F22', 'F28', 'F29', 'F75'] },
-              { brand: 'Buderus', codes: ['6A 227', '6A 504'] },
-              { brand: 'Wolf', codes: ['005', '007'] },
-              { brand: 'Junkers/Bosch', codes: ['EA', 'E9'] },
-              { brand: 'Viessmann', codes: ['F5', 'F02'] },
+              {
+                brand: 'Vaillant',
+                codes: [
+                  { code: 'F22', desc: 'Niedriger Wasserdruck' },
+                  { code: 'F28', desc: 'Zündungsfehler' },
+                  { code: 'F29', desc: 'Flamme erloschen' },
+                  { code: 'F62', desc: 'Gasventil-Störung' },
+                  { code: 'F75', desc: 'Drucksensor-Fehler' },
+                ],
+              },
+              {
+                brand: 'Buderus',
+                codes: [
+                  { code: '6A 227', desc: 'Flamme nicht erkannt' },
+                ],
+              },
+              {
+                brand: 'Wolf',
+                codes: [
+                  { code: '004', desc: 'Zündfehler' },
+                  { code: '005', desc: 'Flammenausfall' },
+                ],
+              },
+              {
+                brand: 'Junkers/Bosch',
+                codes: [
+                  { code: 'A3', desc: 'Abgastemperatur-Störung' },
+                  { code: 'E2', desc: 'Temperaturfühler-Fehler' },
+                  { code: 'E8', desc: 'Druckwächter-Fehler' },
+                  { code: 'EA', desc: 'Keine Flammenbildung' },
+                ],
+              },
             ].map((item, index) => (
               <div key={index} className="bg-white rounded-lg p-6 shadow-sm">
                 <h3 className="font-semibold text-leo-dark mb-3">{item.brand}</h3>
                 <div className="flex flex-wrap gap-2">
-                  {item.codes.map((code) => (
+                  {item.codes.map(({ code, desc }) => (
                     <span
                       key={code}
-                      className="bg-gray-100 text-leo-dark px-3 py-1 rounded-full text-sm font-mono"
+                      title={desc}
+                      className="bg-gray-100 text-leo-dark px-3 py-1 rounded-full text-sm font-mono cursor-help hover:bg-leo-blue/10 transition-colors"
                     >
                       {code}
                     </span>
@@ -214,12 +243,13 @@ function App() {
 
           <div className="text-center mt-8">
             <p className="text-leo-gray mb-4">
-              Ihr Code nicht dabei? Sprechen Sie trotzdem mit LEO — wir helfen bei den meisten Herstellern.
+              Ihr Code nicht dabei? Sprechen Sie trotzdem mit LEO — wir können bei vielen Problemen weiterhelfen.
             </p>
             <button
               onClick={() => setShowVoiceDemo(true)}
               className="inline-flex items-center gap-2 bg-leo-yellow hover:bg-leo-yellow/90 text-leo-dark px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]"
             >
+              <Phone className="w-5 h-5" />
               Jetzt mit LEO sprechen
             </button>
           </div>
@@ -233,7 +263,7 @@ function App() {
             Warum LEO?
           </h2>
           <p className="text-leo-gray text-center mb-12 max-w-2xl mx-auto">
-            Ehrliche Hilfe statt Verkaufsgespräche
+            Hilfe statt Verkaufsgespräche
           </p>
 
           <div className="grid sm:grid-cols-2 gap-8">
@@ -245,7 +275,7 @@ function App() {
               },
               {
                 icon: HeartHandshake,
-                title: 'Ehrliche Einschätzung',
+                title: 'Erste Einschätzung',
                 description: 'Wenn Sie es selbst beheben können, sagen wir Ihnen wie.',
               },
               {
@@ -290,20 +320,28 @@ function App() {
           <div className="space-y-4">
             {[
               {
-                q: 'Ist das wirklich kostenlos?',
-                a: 'Ja. Die Beratung kostet nichts. Nur wenn Sie einen Techniker möchten, entstehen Kosten.',
+                q: 'Ist LEO wirklich kostenlos?',
+                a: 'Ja, der Anruf bei LEO ist vollständig kostenfrei. Es entstehen für Sie keinerlei Kosten oder Verpflichtungen.',
               },
               {
-                q: 'Wer ist LEO?',
-                a: 'LEO ist ein KI-gestützter Assistent, der Ihnen hilft, Heizungsprobleme zu verstehen.',
+                q: 'Was ist LEO — eine echte Person oder KI?',
+                a: 'LEO ist ein KI-gestützter Sprachassistent, der Ihnen rund um die Uhr hilft, Ihr Heizungsproblem zu verstehen und einzuschätzen.',
               },
               {
-                q: 'Was passiert mit meinen Daten?',
-                a: 'Ihre Daten werden nur für die Beratung verwendet und nicht an Dritte verkauft. Siehe Datenschutzerklärung.',
+                q: 'Wann ist ein Heizungsausfall ein Notfall?',
+                a: 'Bei Gasgeruch sofort die Feuerwehr rufen! Bei komplettem Ausfall im Frost (Gefahr von Rohrbruch) oder starken Wasserlecks ist ebenfalls schnelles Handeln wichtig.',
               },
               {
-                q: 'Können Sie auch einen Techniker schicken?',
-                a: 'Ja, wenn nötig vermitteln wir Sie an geprüfte Fachbetriebe in Ihrer Region.',
+                q: 'Was kann ich selbst prüfen?',
+                a: 'Ist die Heizung eingeschaltet? Ist der Wasserdruck okay (1-2 bar)? Sind alle Sicherungen intakt? LEO führt Sie durch diese Checks.',
+              },
+              {
+                q: 'Kann LEO einen Techniker schicken?',
+                a: 'Nein, LEO vermittelt keine Techniker. LEO hilft Ihnen zu verstehen, ob Sie selbst etwas tun können oder professionelle Hilfe brauchen.',
+              },
+              {
+                q: 'Sind meine Daten sicher?',
+                a: 'Ja, LEO ist DSGVO-konform. Wir geben keine persönlichen Informationen an Dritte weiter. Details finden Sie in unserer Datenschutzerklärung.',
               },
             ].map((item, index) => (
               <div
