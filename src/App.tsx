@@ -228,13 +228,15 @@ function App() {
                 <h3 className="font-semibold text-leo-dark mb-3">{item.brand}</h3>
                 <div className="flex flex-wrap gap-2">
                   {item.codes.map(({ code, desc }) => (
-                    <span
-                      key={code}
-                      title={desc}
-                      className="bg-gray-100 text-leo-dark px-3 py-1 rounded-full text-sm font-mono cursor-help hover:bg-leo-blue/10 transition-colors"
-                    >
-                      {code}
-                    </span>
+                    <div key={code} className="relative group">
+                      <span className="bg-gray-100 text-leo-dark px-3 py-1 rounded-full text-sm font-mono cursor-default hover:bg-leo-blue/10 transition-colors inline-block">
+                        {code}
+                      </span>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-leo-dark text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                        {desc}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-leo-dark"></div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
